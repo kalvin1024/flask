@@ -1,4 +1,6 @@
 flask
 flask-smorest
 python-dotenv
-marshmellow
+marshmallow
+sqlalchemy
+flask-sqlalchemy

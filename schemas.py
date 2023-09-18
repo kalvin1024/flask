@@ -16,6 +16,7 @@ class PlainTagSchema(Schema):
     
 class ItemSchema(PlainItemSchema):
     # load_only is skipped during serialization and is write-only, dump_only is read-only
+    # fkeys are not serialized back to the response
     store_id = fields.Int(required=True, load_only=True)
     store = fields.Nested(PlainStoreSchema(), dump_only=True)
     tags = fields.List(fields.Nested(PlainTagSchema()), dump_only=True)
@@ -42,3 +43,8 @@ class ItemUpdateSchema(Schema):
     price = fields.Float() # no required, can come partially
     # no ids because these are immutable to PUT
     
+# user schema
+class UserSchema(Schema):
+    id = fields.Int(dump_only=True)
+    username = fields.Str(required=True)
+    password = fields.Str(required=True, load_only=True) # sensitive field protected from sending response back

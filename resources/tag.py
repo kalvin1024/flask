@@ -18,9 +18,9 @@ class TagInStore(MethodView): # tag cannot exist independently without a store
     @blp.arguments(TagSchema) # register to the tag schema when data into here
     @blp.response(201, TagSchema)
     def post(self, tag_data, store_id):
-        # has duplicated name and store_id affiliation, cannot be caught by IntegrityError, must hard compare
+        # has duplicated name and store_id affiliation, cannot be caught by IntegrityError due to Schema, must hard compare
         if TagModel.query.filter(TagModel.store_id == store_id, TagModel.name == tag_data['name']).first():
-            abort(400, message="A tag with that name already exists in that store.")
+            abort(409, message="A tag with that name already exists in that store.") 
             
         tag = TagModel(**tag_data, store_id = store_id)
         try:

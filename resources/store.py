@@ -17,7 +17,6 @@ blp = Blueprint("Stores", "stores", description="Operations on stores")
 # /store/<string:store_id> route
 @blp.route("/store/<string:store_id>")
 class Store(MethodView): # endpoint associated to the MethodView class.
-    
     @blp.response(200, StoreSchema)
     def get(self, store_id):
         store = StoreModel.query.get_or_404(store_id)

@@ -3,6 +3,7 @@ flask-smorest
 python-dotenv
 passlib
 marshmallow
+psycopg2-binary
 sqlalchemy
 flask-sqlalchemy
 flask-jwt-extended

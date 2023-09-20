@@ -6,7 +6,7 @@ import os
 import secrets
 from db import db
 from blocklist import BLOCKLIST
-
+from dotenv import load_dotenv
 # adding __init__ helps the python interpreter to interpret the entire folder as one module
 import models
 # also letting SQLAlchemy know what models exist in our application because they are db.Model instances,
@@ -20,6 +20,9 @@ from resources.user import blp as UserBlueprint
 # app factory method
 def create_app(db_url=None):
     app = Flask(__name__) # name of the python module
+    load_dotenv() # load all environment variables like os.environ[''] = ''
+    
+    app.config['PROPAGATE_EXCEPTIONS'] = True
     app.config["API_TITLE"] = "Stores REST API"
     app.config["API_VERSION"] = "v1"
     app.config["OPENAPI_VERSION"] = "3.0.3" # OpenAPI dependency 

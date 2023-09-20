@@ -5,5 +5,5 @@ class UserModel(db.Model):
     
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
-    password = db.Column(db.String(80), nullable=False) # do not require password be unique to each other
+    password = db.Column(db.String(256), nullable=False) # do not require password be unique to each other, hashed = length 256
     

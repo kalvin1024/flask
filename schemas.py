@@ -48,3 +48,7 @@ class UserSchema(Schema):
     id = fields.Int(dump_only=True)
     username = fields.Str(required=True)
     password = fields.Str(required=True, load_only=True) # sensitive field protected from sending response back
+    
+class UserRegisterSchema(UserSchema):
+    # ask user to provide email when register, not when login
+    email = fields.String(required=True)

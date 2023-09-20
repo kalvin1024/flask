@@ -1,5 +1,6 @@
 from flask.views import MethodView
 from flask_smorest import Blueprint, abort
+from flask import current_app # current_app can be used to access data about the running application, including the configuration. 
 from passlib.hash import pbkdf2_sha256 # standard algorithm
 from flask_jwt_extended import (
     create_access_token,
@@ -11,29 +12,35 @@ from flask_jwt_extended import (
 
 from db import db
 from blocklist import BLOCKLIST
+from tasks import send_email
 
 from models import UserModel
-from schemas import UserSchema
+from schemas import UserSchema, UserRegisterSchema
+from sqlalchemy import or_
 
 # this does not require a front end register/login page.
 blp = Blueprint("Users", "users", description="Operations on users")
 
 @blp.route("/register")
 class UserRegister(MethodView):
-    
-    @blp.arguments(UserSchema)
+    @blp.arguments(UserRegisterSchema)
     @blp.response(201, description="User created successfully")
     def post(self, user_data):
-        if UserModel.query.filter(UserModel.username == user_data['username']).first():
+        if UserModel.query.filter(or_(UserModel.username == user_data['username'],
+                                      UserModel.email == user_data['email'])
+        ).first():
             # 409: conflict with existing resource, occurred at PUT and concurrent write
             abort(409, message="A user with that username already existed") 
         
         user = UserModel(username = user_data['username'],
+                         email = user_data['email'],
                          password = pbkdf2_sha256.hash(user_data['password'])
         )
         
         db.session.add(user)
         db.session.commit()
+        
+        current_app.queue.enqueue(send_email, user.email, user.username) # call the function send_email in tasks.py here using enqueue()
         
         return {"message": "User created successfully"}
 

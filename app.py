@@ -8,9 +8,13 @@ from db import db
 from blocklist import BLOCKLIST
 from dotenv import load_dotenv
 # adding __init__ helps the python interpreter to interpret the entire folder as one module
+
 import models
 # also letting SQLAlchemy know what models exist in our application because they are db.Model instances,
 # look at __tablename__ and define db.Column attrs to create tables
+
+import redis
+from rq import Queue
 
 from resources.item import blp as ItemBlueprint
 from resources.store import blp as StoreBlueprint
@@ -22,7 +26,10 @@ def create_app(db_url=None):
     app = Flask(__name__) # name of the python module
     load_dotenv() # load all environment variables like os.environ[''] = ''
     
-    app.config['PROPAGATE_EXCEPTIONS'] = True
+    connection = redis.from_url(os.getenv("REDIS_URL")) # connect to the redis db
+    app.queue = Queue("emails", connection=connection) # name 'emails' queue will use the REDIS_URL database connection, called app.queue, used in resources/user.py
+    
+    app.config['PROPAGATE_EXCEPTIONS'] = True # will cascade exceptions in the stack
     app.config["API_TITLE"] = "Stores REST API"
     app.config["API_VERSION"] = "v1"
     app.config["OPENAPI_VERSION"] = "3.0.3" # OpenAPI dependency 

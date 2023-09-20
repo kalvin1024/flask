@@ -9,3 +9,6 @@ flask-sqlalchemy
 flask-jwt-extended
 flask-migrate
 gunicorn
+requests
+rq
+redis
